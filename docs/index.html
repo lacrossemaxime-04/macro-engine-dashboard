@@ -1,11 +1,75 @@
 <!doctype html>
-<html lang="fr">
+<html lang='fr'>
 <head>
-  <meta charset="utf-8">
-  <title>Macro Engine Dashboard</title>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<title>Macro Engine Dashboard</title>
+<style>
+body { font-family: Inter, Arial, sans-serif; margin:0; background:#f4f7fb; color:#1f2937; }
+.wrapper { max-width:1200px; margin:0 auto; padding:24px; }
+.hero { background:linear-gradient(135deg,#122B49,#1F3864); color:white; padding:28px; border-radius:18px; box-shadow:0 12px 32px rgba(18,43,73,.22); }
+.hero h1 { margin:0 0 8px 0; font-size:30px; }
+.hero p { margin:6px 0; color:#dbe7f7; }
+.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:18px; }
+.card { background:white; border-radius:16px; padding:18px; box-shadow:0 8px 22px rgba(15,23,42,.08); }
+.card h3 { margin:0 0 8px 0; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:#64748b; }
+.big { font-size:28px; font-weight:800; }
+.signal-on { color:#15803d; }
+.signal-off { color:#b91c1c; }
+.pillars { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-top:18px; }
+.pill { border-radius:14px; padding:16px; color:white; }
+.pill small { display:block; opacity:.85; margin-bottom:6px; }
+.rules, .tablebox { background:white; border-radius:16px; padding:18px; box-shadow:0 8px 22px rgba(15,23,42,.08); margin-top:18px; }
+ul { margin:8px 0 0 18px; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th, td { padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:left; vertical-align:top; }
+th { background:#122B49; color:white; position:sticky; top:0; }
+.footer { color:#64748b; font-size:12px; margin-top:16px; }
+@media (max-width: 900px) { .grid, .pillars { grid-template-columns:1fr 1fr; } }
+@media (max-width: 640px) { .grid, .pillars { grid-template-columns:1fr; } .wrapper{padding:14px;} }
+</style>
 </head>
 <body>
-  <h1>Macro Engine Dashboard</h1>
-  <p>Le dashboard sera mis à jour automatiquement après le premier lancement du workflow.</p>
+<div class='wrapper'>
+  <div class='hero'>
+    <h1>Macro Engine Dashboard — SPY</h1>
+    <p>Signal de marché mensuel basé sur le modèle retenu.</p>
+    <p><strong>Date du dernier signal :</strong> 2026-07-31 &nbsp;|&nbsp; <strong>Prochain calcul :</strong> 2026-08-31</p>
+  </div>
+  <div class='grid'>
+    <div class='card'><h3>Signal actuel</h3><div class='big signal-on'>RISK ON</div><div>Acheter / conserver SPY</div></div>
+    <div class='card'><h3>Composite</h3><div class='big'>51.17</div><div>Score global 0-100</div></div>
+    <div class='card'><h3>Credit / Vol</h3><div class='big'>40.57</div><div>Bloc stress marché</div></div>
+    <div class='card'><h3>Tendance</h3><div class='big'>POSITIVE</div><div>Confirmation prix mensuelle</div></div>
+  </div>
+  <div class='pillars'>
+    <div class='pill' style='background:#0f766e'><small>Growth</small><div class='big'>65.77</div></div>
+    <div class='pill' style='background:#0f766e'><small>Inflation</small><div class='big'>84.78</div></div>
+    <div class='pill' style='background:#b91c1c'><small>Rates</small><div class='big'>35.03</div></div>
+    <div class='pill' style='background:#b91c1c'><small>Credit / Vol</small><div class='big'>40.57</div></div>
+    <div class='pill' style='background:#b45309'><small>Composite</small><div class='big'>51.17</div></div>
+  </div>
+  <div class='rules'>
+    <h2>Règles du modèle</h2>
+    <ul>
+      <li>Risk-On si Composite ≥ 48 et Credit/Vol ≥ 45</li>
+      <li>Risk-On si tendance positive et Composite ≥ 45 et Credit/Vol ≥ 35</li>
+      <li>Risk-Off si Composite ≤ 40 et tendance négative</li>
+      <li>Risk-Off si Credit/Vol ≤ 35 et tendance négative</li>
+      <li>Sinon : conservation de l’état précédent</li>
+    </ul>
+  </div>
+  <div class='tablebox'>
+    <h2>Indicateurs</h2>
+    <table>
+      <thead><tr><th>Indicateur</th><th>Valeur brute</th><th>Score</th><th>Pourquoi il compte</th></tr></thead>
+      <tbody><tr><td>Initial Claims</td><td>187000.0</td><td>99.44</td><td>Fast labor-market stress gauge. Lower is better for risk assets.</td></tr><tr><td>Continuing Claims</td><td>1796000.0</td><td>85.87</td><td>Confirms whether labor weakness is becoming persistent.</td></tr><tr><td>Consumer Sentiment</td><td>44.8</td><td>0.34</td><td>Consumer confidence proxy and cyclical demand signal.</td></tr><tr><td>Chicago Fed NFCI</td><td>-0.552</td><td>68.67</td><td>Broad financial conditions measure. Easier conditions support risk.</td></tr><tr><td>10Y-3M curve</td><td>0.76</td><td>29.53</td><td>Cycle / recession signal via the yield curve slope.</td></tr><tr><td>Breadth proxy RSP/SPY</td><td>0.2883</td><td>84.38</td><td>Internal market breadth proxy using equal-weight vs cap-weight.</td></tr><tr><td>Copper / Gold</td><td>0.017</td><td>92.19</td><td>Cyclical growth versus safe-haven demand proxy.</td></tr><tr><td>10Y breakeven inflation</td><td>2.28</td><td>92.23</td><td>Checks whether long-term inflation expectations remain anchored.</td></tr><tr><td>5Y breakeven inflation</td><td>2.29</td><td>94.35</td><td>More reactive market inflation expectations measure.</td></tr><tr><td>5y5y forward inflation</td><td>2.27</td><td>94.35</td><td>Long-term inflation anchor quality measure.</td></tr><tr><td>CPI YoY anchor score</td><td>332.568</td><td>58.22</td><td>Realized inflation distance from a 2.25% comfort zone.</td></tr><tr><td>US 10Y real yield</td><td>2.39</td><td>4.95</td><td>Higher real yields pressure equity valuations.</td></tr><tr><td>10Y-2Y curve</td><td>0.34</td><td>32.56</td><td>Additional cycle signal from the yield curve.</td></tr><tr><td>2Y minus Fed Funds proxy</td><td>4.31</td><td>28.07</td><td>Proxy for expected policy path versus current policy rate.</td></tr><tr><td>Net liquidity</td><td>5917754.096</td><td>74.55</td><td>Approximation of system liquidity support.</td></tr><tr><td>BAA spread vs 10Y</td><td>1.53</td><td>68.75</td><td>Long-history credit stress proxy.</td></tr><tr><td>VIX</td><td>18.7</td><td>44.19</td><td>Implied equity fear gauge on the S&P 500.</td></tr><tr><td>VIX / VIX3M</td><td>0.914</td><td>48.55</td><td>Short-term volatility stress versus 3-month volatility.</td></tr><tr><td>VXN - VIX</td><td>10.11</td><td>0.77</td><td>Relative stress in Nasdaq vs broad equity market.</td></tr></tbody>
+    </table>
+  </div>
+  <div class='footer'>
+    Calcul automatique prévu chaque dernier jour du mois après la clôture US. Décision à prendre le lendemain à l’ouverture.<br/>
+    Site statique généré par Python et publié via GitHub Pages.
+  </div>
+</div>
 </body>
 </html>
