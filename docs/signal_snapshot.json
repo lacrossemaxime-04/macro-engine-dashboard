@@ -1,16 +1,16 @@
 {
-  "generated_at_new_york": "2026-07-24T10:36:37.125024-04:00",
+  "generated_at_new_york": "2026-07-24T10:40:39.562297-04:00",
   "as_of_signal_date": "2026-07-31",
   "current_signal": "RISK ON",
   "decision": "Acheter / conserver SPY",
   "next_calculation_date": "2026-08-31",
   "method": "Calcul mensuel à la clôture du dernier jour ouvré du mois ; décision appliquée au prochain open.",
   "pillars": {
-    "growth": 65.77,
+    "growth": 65.94,
     "inflation": 84.78,
     "rates": 35.03,
-    "credit_vol": 40.57,
-    "composite": 51.17,
+    "credit_vol": 40.36,
+    "composite": 51.14,
     "trend": "positive",
     "exposure": 1
   },
@@ -61,14 +61,14 @@
       "code": "RSP_SPY",
       "label": "Breadth proxy RSP/SPY",
       "why": "Internal market breadth proxy using equal-weight vs cap-weight.",
-      "score": 84.38,
-      "raw_value": 0.2883
+      "score": 85.94,
+      "raw_value": 0.2886
     },
     {
       "code": "COPPER_GOLD",
       "label": "Copper / Gold",
       "why": "Cyclical growth versus safe-haven demand proxy.",
-      "score": 92.19,
+      "score": 91.8,
       "raw_value": 0.017
     },
     {
@@ -145,15 +145,15 @@
       "code": "V_RATIO",
       "label": "VIX / VIX3M",
       "why": "Short-term volatility stress versus 3-month volatility.",
-      "score": 48.55,
-      "raw_value": 0.914
+      "score": 47.72,
+      "raw_value": 0.9153
     },
     {
       "code": "VXN_VIX",
       "label": "VXN - VIX",
       "why": "Relative stress in Nasdaq vs broad equity market.",
       "score": 0.77,
-      "raw_value": 10.11
+      "raw_value": 9.94
     }
   ]
 }
