@@ -1,5 +1,6 @@
 import os
 import json
+import math
 import calendar
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -63,6 +64,7 @@ WHY = {
     'VXN_VIX': 'Relative stress in Nasdaq vs broad equity market.'
 }
 
+
 def fred_csv(series):
     url = f'https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}'
     df = pd.read_csv(url)
@@ -71,9 +73,11 @@ def fred_csv(series):
     df[series] = pd.to_numeric(df[series], errors='coerce')
     return df.set_index('DATE')
 
+
 def get_fred_monthly_frame():
     frames = [fred_csv(s) for s in FRED_SERIES]
     return pd.concat(frames, axis=1).sort_index()
+
 
 def get_yf_monthly_frame():
     out = {}
@@ -84,6 +88,7 @@ def get_yf_monthly_frame():
             close = close.iloc[:, 0]
         out[s] = close.rename(s)
     return pd.concat(out.values(), axis=1).sort_index()
+
 
 def expanding_percentile(s, min_obs=24):
     vals = s.astype(float)
@@ -97,6 +102,7 @@ def expanding_percentile(s, min_obs=24):
         else:
             out.iloc[i] = 100.0 * (hist <= arr[i]).mean()
     return out
+
 
 def transform_indicator(name, monthly):
     s = monthly[name] if name in monthly.columns else None
@@ -142,8 +148,22 @@ def transform_indicator(name, monthly):
         return net.pct_change(3) * 100
     raise KeyError(name)
 
+
 def is_last_day_of_month(dt):
     return dt.day == calendar.monthrange(dt.year, dt.month)[1]
+
+
+def month_end(dt):
+    return datetime(dt.year, dt.month, calendar.monthrange(dt.year, dt.month)[1], tzinfo=NY).date()
+
+
+def previous_month_end(dt):
+    if dt.month == 1:
+        y, m = dt.year - 1, 12
+    else:
+        y, m = dt.year, dt.month - 1
+    return datetime(y, m, calendar.monthrange(y, m)[1], tzinfo=NY).date()
+
 
 def next_month_end(dt):
     if dt.month == 12:
@@ -151,6 +171,11 @@ def next_month_end(dt):
     else:
         y, m = dt.year, dt.month + 1
     return datetime(y, m, calendar.monthrange(y, m)[1], tzinfo=NY).date()
+
+
+def effective_signal_month_end(now_date):
+    return month_end(now_date) if is_last_day_of_month(now_date) else previous_month_end(now_date)
+
 
 def build_payload(now_date):
     fred = get_fred_monthly_frame()
@@ -197,10 +222,16 @@ def build_payload(now_date):
         state.append(prev)
     data['regime_expo'] = state
 
-    usable = data.dropna(subset=['composite', 'credit_vol'])
+    usable = data.dropna(subset=['composite', 'credit_vol']).copy()
+    cutoff_date = effective_signal_month_end(now_date)
+    usable = usable.loc[usable.index <= pd.Timestamp(cutoff_date)]
+    if usable.empty:
+        raise ValueError(f"Aucune donnée mensuelle complète disponible jusqu'au {cutoff_date}.")
+
     latest = usable.iloc[-1]
-    latest_date = usable.index[-1].date()
-    next_calc = now_date if is_last_day_of_month(now_date) else next_month_end(now_date)
+    latest_ts = usable.index[-1]
+    latest_date = latest_ts.date()
+    next_calc = next_month_end(now_date) if is_last_day_of_month(now_date) else month_end(now_date)
 
     signal = 'RISK ON' if float(latest['regime_expo']) >= 1 else 'RISK OFF'
     action = 'Acheter / conserver SPY' if signal == 'RISK ON' else 'Vendre / rester cash'
@@ -208,50 +239,52 @@ def build_payload(now_date):
     indicator_rows = []
     for ind in ind_names:
         if ind == 'RSP_SPY':
-            raw_val = (monthly['RSP'] / monthly['SPY']).iloc[-1]
+            raw_val = (monthly['RSP'] / monthly['SPY']).loc[latest_ts]
         elif ind == 'COPPER_GOLD':
-            raw_val = (monthly['HG=F'] / monthly['GLD']).iloc[-1]
+            raw_val = (monthly['HG=F'] / monthly['GLD']).loc[latest_ts]
         elif ind == 'V_RATIO':
-            raw_val = (monthly['VIXCLS'] / monthly['^VIX3M']).iloc[-1]
+            raw_val = (monthly['VIXCLS'] / monthly['^VIX3M']).loc[latest_ts]
         elif ind == 'VXN_VIX':
-            raw_val = (monthly['^VXN'] - monthly['VIXCLS']).iloc[-1]
+            raw_val = (monthly['^VXN'] - monthly['VIXCLS']).loc[latest_ts]
         elif ind == 'NET_LIQ':
-            raw_val = (monthly['WALCL'] - monthly['RRPONTSYD'] - monthly['WTREGEN']).iloc[-1]
+            raw_val = (monthly['WALCL'] - monthly['RRPONTSYD'] - monthly['WTREGEN']).loc[latest_ts]
         else:
-            raw_val = monthly[ind].iloc[-1]
+            raw_val = monthly.loc[latest_ts, ind]
+        score_val = scores.loc[latest_ts, ind]
         indicator_rows.append({
             'code': ind,
             'label': LABELS.get(ind, ind),
             'why': WHY.get(ind, ''),
-            'score': None if pd.isna(scores[ind].iloc[-1]) else round(float(scores[ind].iloc[-1]), 2),
+            'score': None if pd.isna(score_val) else round(float(score_val), 2),
             'raw_value': None if pd.isna(raw_val) else round(float(raw_val), 4),
         })
 
-    return {
-        'generated_at_new_york': datetime.now(NY).isoformat(),
+    payload = {
+        'generated_at': datetime.now(NY).strftime('%Y-%m-%d %H:%M %Z'),
         'as_of_signal_date': str(latest_date),
+        'next_calculation_date': str(next_calc),
+        'ticker': 'SPY',
         'current_signal': signal,
         'decision': action,
-        'next_calculation_date': str(next_calc),
-        'method': 'Calcul mensuel à la clôture du dernier jour ouvré du mois ; décision appliquée au prochain open.',
         'pillars': {
             'growth': round(float(latest['growth']), 2),
             'inflation': round(float(latest['inflation']), 2),
             'rates': round(float(latest['rates']), 2),
             'credit_vol': round(float(latest['credit_vol']), 2),
             'composite': round(float(latest['composite']), 2),
-            'trend': 'positive' if float(latest['trend']) > 0 else 'negative',
-            'exposure': int(float(latest['regime_expo']))
+            'trend': 'positive' if float(latest['trend']) == 1 else 'negative'
         },
         'rules': [
-            'Risk-On si Composite >= 48 et Credit/Vol >= 45',
-            'Risk-On si tendance positive et Composite >= 45 et Credit/Vol >= 35',
-            'Risk-Off si Composite <= 40 et tendance négative',
-            'Risk-Off si Credit/Vol <= 35 et tendance négative',
+            'Risk-On si Composite ≥ 48 et Credit/Vol ≥ 45',
+            'Risk-On si tendance positive et Composite ≥ 45 et Credit/Vol ≥ 35',
+            'Risk-Off si Composite ≤ 40 et tendance négative',
+            'Risk-Off si Credit/Vol ≤ 35 et tendance négative',
             'Sinon : conservation de l’état précédent'
         ],
         'indicators': indicator_rows
     }
+    return payload
+
 
 def pill_color(v):
     if v >= 60:
@@ -259,6 +292,7 @@ def pill_color(v):
     if v >= 45:
         return '#b45309'
     return '#b91c1c'
+
 
 def render_dashboard(payload):
     rows_html = ''.join(
@@ -341,11 +375,12 @@ th {{ background:#122B49; color:white; position:sticky; top:0; }}
 </body>
 </html>"""
 
+
 def main():
     force = os.getenv('FORCE_RUN', '0') == '1'
     now_ny = datetime.now(NY)
     if not force and not is_last_day_of_month(now_ny.date()):
-        print("Aujourd'hui n'est pas le dernier jour du mois à New York. Aucun fichier mis à jour.")
+        print('Aujourd\'hui n\'est pas le dernier jour du mois à New York. Aucun fichier mis à jour.')
         return
 
     payload = build_payload(now_ny.date())
@@ -354,6 +389,7 @@ def main():
     with open(os.path.join(DOCS_DIR, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(render_dashboard(payload))
     print(json.dumps(payload, ensure_ascii=False, indent=2))
+
 
 if __name__ == '__main__':
     main()
