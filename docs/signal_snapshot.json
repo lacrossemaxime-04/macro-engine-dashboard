@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-07-24 10:49 EDT",
-  "as_of_signal_date": "2026-06-30",
-  "next_calculation_date": "2026-07-31",
+  "generated_at": "2026-07-31 05:51 EDT",
+  "as_of_signal_date": "2026-07-31",
+  "next_calculation_date": "2026-08-31",
   "ticker": "SPY",
   "current_signal": "RISK ON",
   "decision": "Acheter / conserver SPY",
   "pillars": {
-    "growth": 52.56,
-    "inflation": 84.63,
-    "rates": 31.63,
-    "credit_vol": 49.58,
-    "composite": 49.49,
+    "growth": 66.9,
+    "inflation": 84.96,
+    "rates": 34.33,
+    "credit_vol": 29.43,
+    "composite": 47.45,
     "trend": "positive"
   },
   "rules": [
@@ -25,134 +25,134 @@
       "code": "ICSA",
       "label": "Initial Claims",
       "why": "Fast labor-market stress gauge. Lower is better for risk assets.",
-      "score": 90.76,
-      "raw_value": 217000.0
+      "score": 97.34,
+      "raw_value": 197000.0
     },
     {
       "code": "CCSA",
       "label": "Continuing Claims",
       "why": "Confirms whether labor weakness is becoming persistent.",
-      "score": 84.31,
-      "raw_value": 1821000.0
+      "score": 86.71,
+      "raw_value": 1782000.0
     },
     {
       "code": "UMCSENT",
       "label": "Consumer Sentiment",
       "why": "Consumer confidence proxy and cyclical demand signal.",
-      "score": 0.23,
+      "score": 0.34,
       "raw_value": 44.8
     },
     {
       "code": "NFCI",
       "label": "Chicago Fed NFCI",
       "why": "Broad financial conditions measure. Easier conditions support risk.",
-      "score": 63.21,
-      "raw_value": -0.511
+      "score": 68.97,
+      "raw_value": -0.554
     },
     {
       "code": "T10Y3M",
       "label": "10Y-3M curve",
       "why": "Cycle / recession signal via the yield curve slope.",
-      "score": 24.72,
-      "raw_value": 0.57
+      "score": 32.52,
+      "raw_value": 0.86
     },
     {
       "code": "RSP_SPY",
       "label": "Breadth proxy RSP/SPY",
       "why": "Internal market breadth proxy using equal-weight vs cap-weight.",
-      "score": 9.02,
-      "raw_value": 0.2849
+      "score": 89.84,
+      "raw_value": 0.2904
     },
     {
       "code": "COPPER_GOLD",
       "label": "Copper / Gold",
       "why": "Cyclical growth versus safe-haven demand proxy.",
-      "score": 95.69,
-      "raw_value": 0.0168
+      "score": 92.58,
+      "raw_value": 0.0172
     },
     {
       "code": "T10YIE",
       "label": "10Y breakeven inflation",
       "why": "Checks whether long-term inflation expectations remain anchored.",
-      "score": 98.23,
-      "raw_value": 2.24
+      "score": 94.7,
+      "raw_value": 2.27
     },
     {
       "code": "T5YIE",
       "label": "5Y breakeven inflation",
       "why": "More reactive market inflation expectations measure.",
       "score": 99.65,
-      "raw_value": 2.26
+      "raw_value": 2.24
     },
     {
       "code": "T5YIFR",
       "label": "5y5y forward inflation",
       "why": "Long-term inflation anchor quality measure.",
-      "score": 91.49,
-      "raw_value": 2.22
+      "score": 87.28,
+      "raw_value": 2.3
     },
     {
       "code": "CPIAUCSL",
       "label": "CPI YoY anchor score",
       "why": "Realized inflation distance from a 2.25% comfort zone.",
-      "score": 49.15,
+      "score": 58.22,
       "raw_value": 332.568
     },
     {
       "code": "DFII10",
       "label": "US 10Y real yield",
       "why": "Higher real yields pressure equity valuations.",
-      "score": 9.93,
-      "raw_value": 2.2
+      "score": 4.24,
+      "raw_value": 2.41
     },
     {
       "code": "T10Y2Y",
       "label": "10Y-2Y curve",
       "why": "Additional cycle signal from the yield curve.",
-      "score": 30.95,
-      "raw_value": 0.3
+      "score": 37.38,
+      "raw_value": 0.45
     },
     {
       "code": "DGS2",
       "label": "2Y minus Fed Funds proxy",
       "why": "Proxy for expected policy path versus current policy rate.",
-      "score": 37.44,
-      "raw_value": 4.14
+      "score": 31.89,
+      "raw_value": 4.22
     },
     {
       "code": "NET_LIQ",
       "label": "Net liquidity",
       "why": "Approximation of system liquidity support.",
-      "score": 48.2,
-      "raw_value": 5816922.1
+      "score": 63.8,
+      "raw_value": 5827412.924
     },
     {
       "code": "BAA10YM",
       "label": "BAA spread vs 10Y",
       "why": "Long-history credit stress proxy.",
-      "score": 68.71,
+      "score": 68.75,
       "raw_value": 1.53
     },
     {
       "code": "VIXCLS",
       "label": "VIX",
       "why": "Implied equity fear gauge on the S&P 500.",
-      "score": 57.53,
-      "raw_value": 16.45
+      "score": 35.08,
+      "raw_value": 20.66
     },
     {
       "code": "V_RATIO",
       "label": "VIX / VIX3M",
       "why": "Short-term volatility stress versus 3-month volatility.",
-      "score": 71.67,
-      "raw_value": 0.8658
+      "score": 11.2,
+      "raw_value": 1.0058
     },
     {
       "code": "VXN_VIX",
       "label": "VXN - VIX",
       "why": "Relative stress in Nasdaq vs broad equity market.",
-      "score": 0.39,
-      "raw_value": 10.66
+      "score": 2.7,
+      "raw_value": 6.89
     }
   ]
 }
